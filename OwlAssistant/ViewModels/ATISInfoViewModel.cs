@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.IO;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -18,6 +20,12 @@ using OwlAssistant.Resources;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
+using SoundFlow.Abstracts;
+using SoundFlow.Abstracts.Devices;
+using SoundFlow.Backends.MiniAudio;
+using SoundFlow.Components;
+using SoundFlow.Enums;
+using SoundFlow.Structs;
 using Notification = Avalonia.Controls.Notifications.Notification;
 
 namespace OwlAssistant.ViewModels;
@@ -25,6 +33,7 @@ namespace OwlAssistant.ViewModels;
 public class ATISInfoViewModel : ViewModelBase
 {
     [Reactive] public IImmutableSolidColorBrush ATISStatusColor { get; set; } = Brushes.OrangeRed;
+    [Reactive] public IImmutableSolidColorBrush RecStatusColor { get; set; } = Brushes.CornflowerBlue;
     [Reactive] public double MasterVolume { get; set; } = 0;
     [Reactive] public double MusicVolume { get; set; } = 0;
     [Reactive] public bool MusicStop { get; set; }
@@ -45,6 +54,15 @@ public class ATISInfoViewModel : ViewModelBase
     public ReactiveCommand<Unit, Unit> RefreshCommand { get; }
     public ReactiveCommand<Unit, Unit> ApplyTxFreq { get; }
     public ReactiveCommand<Unit, Unit> ResetAll { get; }
+    
+    public ReactiveCommand<Unit, Unit> ChangeRecordStatus { get; }
+
+
+    private bool _recording;
+    private AudioEngine? _audioEngine;
+    private AudioCaptureDevice? _recDevice;
+    private Recorder? _recorder;
+    private static MemoryStream _audioMemoryStream;
 
     public ATISInfoViewModel()
     {
@@ -52,6 +70,16 @@ public class ATISInfoViewModel : ViewModelBase
         RefreshCommand = ReactiveCommand.CreateFromTask(_refreshConfig);
         ApplyTxFreq = ReactiveCommand.CreateFromTask(_applyTxFreq);
         ResetAll = ReactiveCommand.CreateFromTask(_resetAll);
+        ChangeRecordStatus = ReactiveCommand.CreateFromTask(async () =>
+        {
+            _recording = !_recording;
+            if (_recording)
+            {
+                _startRecord();
+                return;
+            }
+            await _stopRecord();
+        });
         
         this.WhenActivated(disposable =>
         {
@@ -71,6 +99,12 @@ public class ATISInfoViewModel : ViewModelBase
             ResetAll.ThrownExceptions.Subscribe(ex =>
             {
                 GlobalVar.Manager?.Show(new Notification("Error", ex.Message, NotificationType.Error));
+            });  
+            ChangeRecordStatus.ThrownExceptions.Subscribe(ex =>
+            {
+                GlobalVar.Manager?.Show(new Notification("Error", ex.Message, NotificationType.Error));
+                _recording = false;
+                _stopRecord();
             });
             
             if (Design.IsDesignMode)return;
@@ -303,6 +337,81 @@ public class ATISInfoViewModel : ViewModelBase
         TxFrequency = res["fre"].ToObject<double>();
         BacklightTimeout = res["bak"].ToObject<double>();
         CampusEnabled = res["camp"].ToObject<bool>();
+    }
+
+    private void _startRecord()
+    {
+        Log.Information("Start record...");
+        _recording = true;
+        _audioEngine?.Dispose();
+        _recDevice?.Dispose();
+        _recorder?.Dispose();
         
+        _audioEngine = new MiniAudioEngine();
+        
+        // Find the default capture (recording) device.
+        foreach (var audioEngineCaptureDevice in _audioEngine.CaptureDevices)
+        {
+            Log.Information("====?===========>" + audioEngineCaptureDevice.Id.ToString());
+        }
+        var defaultCaptureDevice = _audioEngine.CaptureDevices.First();
+        if (defaultCaptureDevice.Id == IntPtr.Zero)
+        {
+            throw new Exception("No default capture device found.");
+            return;
+        }
+
+        // Define the audio format for recording. The backend will capture in this format.
+        var audioFormat = new AudioFormat
+        {
+            Format = SampleFormat.F32,
+            SampleRate = 48000,
+            Channels = 1 // Mono recording
+        };
+
+        RecStatusColor = Brushes.Orange;
+        
+        // Initialize the capture device.
+        _recDevice = _audioEngine.InitializeCaptureDevice(defaultCaptureDevice, audioFormat);
+        
+        _audioMemoryStream = new MemoryStream();
+        _recorder = new Recorder(_recDevice, _audioMemoryStream, EncodingFormat.Wav);
+        
+        _recDevice.Start();
+        _recorder.StartRecording();
+    }
+
+    private async Task _stopRecord()
+    {
+        try
+        {
+            _recording = false;
+            RecStatusColor = Brushes.CornflowerBlue;
+            _recorder?.StopRecording();
+            _recDevice?.Stop();
+
+            _audioEngine?.Dispose();
+            _recDevice?.Dispose();
+            _recorder?.Dispose();
+
+            _audioEngine = null;
+            _recDevice = null;
+            _recorder = null;
+            Log.Information($"Stopped recording. Logged {_audioMemoryStream.Length} bytes.");
+
+            _audioMemoryStream.Position = 0;
+            
+            // fire-and-forget
+            await GlobalCfg.ATISUploadRecording
+                .PostMultipartAsync(multipart => 
+                    multipart.AddFile("file", _audioMemoryStream,"file")
+                )
+                .ReceiveString();
+        }
+        catch (Exception e)
+        {
+            // ignoredf
+            GlobalVar.Manager?.Show(new Notification("Warning", e.Message, NotificationType.Warning));
+        }
     }
 }

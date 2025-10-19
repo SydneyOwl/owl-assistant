@@ -278,20 +278,29 @@
                             </StackPanel>
                         </Border>
 
-                        <!-- Control Buttons -->
-                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-                            <!-- Left Column -->
-                            <StackPanel Grid.Column="0" Spacing="8">
-                                <Button Content="Recording"
-                                        Padding="12,8"
-                                        CornerRadius="8"
-                                        FontSize="12"/>
-                            </StackPanel>
-                            
-                        </Grid>
+                        <!-- Left Column -->
+                        <StackPanel Grid.Column="0" Spacing="8" HorizontalAlignment="Center">
+                            <Button
+                                Background="{Binding RecStatusColor}"
+                                Padding="12,8"
+                                    CornerRadius="8"
+                                    Command="{Binding ChangeRecordStatus}"
+                                    FontSize="12">
+                                <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                                    <avalonia:MaterialIcon Kind="RecordRec"
+                                                           Width="20"
+                                                           VerticalAlignment="Center"
+                                                           Height="20"
+                                                           Foreground="{DynamicResource SystemControlBackgroundAccentBrush}" />
+                                    <TextBlock VerticalAlignment="Center"
+                                               Text="Record"
+                                               FontSize="13"
+                                               Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
                     </StackPanel>
                 </Border>
-
             </StackPanel>
         </ScrollViewer>
     </StackPanel>

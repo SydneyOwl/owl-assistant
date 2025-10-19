@@ -32,6 +32,8 @@ public class GlobalCfg
     
     public static string ATISChgSong = $"{GlobalAddr}fm/chgSong";
     
+    public static string ATISUploadRecording = $"{GlobalAddr}fm/rec";
+    
     public static int RawInfoInterval = 5;
 
     public static int DefaultRequestTimeout = 10;

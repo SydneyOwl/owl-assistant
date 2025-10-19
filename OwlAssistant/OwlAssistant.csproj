@@ -27,6 +27,8 @@
         <PackageReference Include="ScottPlot.Avalonia" />
         <PackageReference Include="Serilog.Sinks.Console" />
         <PackageReference Include="Serilog.Sinks.Debug" />
+        <PackageReference Include="SoundFlow" />
+        <PackageReference Include="Xaml.Behaviors.Avalonia" />
     </ItemGroup>
 
     <ItemGroup>
