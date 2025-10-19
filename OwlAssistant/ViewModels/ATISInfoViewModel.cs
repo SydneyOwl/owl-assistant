@@ -364,9 +364,9 @@ public class ATISInfoViewModel : ViewModelBase
         // Define the audio format for recording. The backend will capture in this format.
         var audioFormat = new AudioFormat
         {
-            Format = SampleFormat.F32,
-            SampleRate = 48000,
-            Channels = 1 // Mono recording
+            Format = SampleFormat.S16,  // 8位无符号整数，匹配你的播放代码
+            SampleRate = 44100,
+            Channels = 1
         };
 
         RecStatusColor = Brushes.Orange;
@@ -398,7 +398,16 @@ public class ATISInfoViewModel : ViewModelBase
             _recDevice = null;
             _recorder = null;
             Log.Information($"Stopped recording. Logged {_audioMemoryStream.Length} bytes.");
-
+            
+            await Task.Delay(100);
+        
+            _audioMemoryStream.Position = 0;
+            
+            await using (var fileStream = File.Create("./a.wav"))
+            {
+                _audioMemoryStream.WriteTo(fileStream);
+            }
+            
             _audioMemoryStream.Position = 0;
             
             // fire-and-forget
