@@ -23,11 +23,11 @@
         <PackageReference Include="Flurl.Http" />
         <PackageReference Include="Material.Icons.Avalonia" />
         <PackageReference Include="Newtonsoft.Json" />
+        <PackageReference Include="Plugin.AudioRecorder" />
         <PackageReference Include="ReactiveUI.Fody" />
         <PackageReference Include="ScottPlot.Avalonia" />
         <PackageReference Include="Serilog.Sinks.Console" />
         <PackageReference Include="Serilog.Sinks.Debug" />
-        <PackageReference Include="SoundFlow" />
         <PackageReference Include="Xaml.Behaviors.Avalonia" />
     </ItemGroup>
 

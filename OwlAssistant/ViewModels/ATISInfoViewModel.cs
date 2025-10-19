@@ -17,15 +17,10 @@ using Flurl.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OwlAssistant.Resources;
+using Plugin.AudioRecorder;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
-using SoundFlow.Abstracts;
-using SoundFlow.Abstracts.Devices;
-using SoundFlow.Backends.MiniAudio;
-using SoundFlow.Components;
-using SoundFlow.Enums;
-using SoundFlow.Structs;
 using Notification = Avalonia.Controls.Notifications.Notification;
 
 namespace OwlAssistant.ViewModels;
@@ -59,13 +54,20 @@ public class ATISInfoViewModel : ViewModelBase
 
 
     private bool _recording;
-    private AudioEngine? _audioEngine;
-    private AudioCaptureDevice? _recDevice;
-    private Recorder? _recorder;
-    private static MemoryStream _audioMemoryStream;
+    private AudioRecorderService _recorder;
+    private string _tmpFilePath;
 
     public ATISInfoViewModel()
     {
+        _recorder = new AudioRecorderService
+        {
+            StopRecordingOnSilence = false,
+            StopRecordingAfterTimeout = false,
+            SilenceThreshold = 0f
+        };
+
+        _recorder.AudioInputReceived += Recorder_AudioInputReceived;
+        
         CheckATISCommand = ReactiveCommand.CreateFromTask(_checkATIS);
         RefreshCommand = ReactiveCommand.CreateFromTask(_refreshConfig);
         ApplyTxFreq = ReactiveCommand.CreateFromTask(_applyTxFreq);
@@ -75,7 +77,7 @@ public class ATISInfoViewModel : ViewModelBase
             _recording = !_recording;
             if (_recording)
             {
-                _startRecord();
+                await _startRecord();
                 return;
             }
             await _stopRecord();
@@ -100,11 +102,12 @@ public class ATISInfoViewModel : ViewModelBase
             {
                 GlobalVar.Manager?.Show(new Notification("Error", ex.Message, NotificationType.Error));
             });  
-            ChangeRecordStatus.ThrownExceptions.Subscribe(ex =>
+            ChangeRecordStatus.ThrownExceptions.Subscribe(async void (ex) =>
             {
+                Log.Error(ex.StackTrace);
                 GlobalVar.Manager?.Show(new Notification("Error", ex.Message, NotificationType.Error));
                 _recording = false;
-                _stopRecord();
+                 await _stopRecord();
             });
             
             if (Design.IsDesignMode)return;
@@ -339,46 +342,12 @@ public class ATISInfoViewModel : ViewModelBase
         CampusEnabled = res["camp"].ToObject<bool>();
     }
 
-    private void _startRecord()
+    private async Task _startRecord()
     {
         Log.Information("Start record...");
         _recording = true;
-        _audioEngine?.Dispose();
-        _recDevice?.Dispose();
-        _recorder?.Dispose();
-        
-        _audioEngine = new MiniAudioEngine();
-        
-        // Find the default capture (recording) device.
-        foreach (var audioEngineCaptureDevice in _audioEngine.CaptureDevices)
-        {
-            Log.Information("====?===========>" + audioEngineCaptureDevice.Id.ToString());
-        }
-        var defaultCaptureDevice = _audioEngine.CaptureDevices.First();
-        if (defaultCaptureDevice.Id == IntPtr.Zero)
-        {
-            throw new Exception("No default capture device found.");
-            return;
-        }
-
-        // Define the audio format for recording. The backend will capture in this format.
-        var audioFormat = new AudioFormat
-        {
-            Format = SampleFormat.S16,  // 8位无符号整数，匹配你的播放代码
-            SampleRate = 44100,
-            Channels = 1
-        };
-
         RecStatusColor = Brushes.Orange;
-        
-        // Initialize the capture device.
-        _recDevice = _audioEngine.InitializeCaptureDevice(defaultCaptureDevice, audioFormat);
-        
-        _audioMemoryStream = new MemoryStream();
-        _recorder = new Recorder(_recDevice, _audioMemoryStream, EncodingFormat.Wav);
-        
-        _recDevice.Start();
-        _recorder.StartRecording();
+        await _recorder.StartRecording();
     }
 
     private async Task _stopRecord()
@@ -387,40 +356,33 @@ public class ATISInfoViewModel : ViewModelBase
         {
             _recording = false;
             RecStatusColor = Brushes.CornflowerBlue;
-            _recorder?.StopRecording();
-            _recDevice?.Stop();
-
-            _audioEngine?.Dispose();
-            _recDevice?.Dispose();
-            _recorder?.Dispose();
-
-            _audioEngine = null;
-            _recDevice = null;
-            _recorder = null;
-            Log.Information($"Stopped recording. Logged {_audioMemoryStream.Length} bytes.");
-            
-            await Task.Delay(100);
-        
-            _audioMemoryStream.Position = 0;
-            
-            await using (var fileStream = File.Create("./a.wav"))
-            {
-                _audioMemoryStream.WriteTo(fileStream);
-            }
-            
-            _audioMemoryStream.Position = 0;
-            
-            // fire-and-forget
-            await GlobalCfg.ATISUploadRecording
-                .PostMultipartAsync(multipart => 
-                    multipart.AddFile("file", _audioMemoryStream,"file")
-                )
-                .ReceiveString();
+            await _recorder?.StopRecording()!;
         }
         catch (Exception e)
         {
-            // ignoredf
+            // ignored
             GlobalVar.Manager?.Show(new Notification("Warning", e.Message, NotificationType.Warning));
         }
     }
+    
+    private async void Recorder_AudioInputReceived(object? sender, string audioFile)
+    {
+        try
+        {
+            Log.Information($"Audio Input Received: {audioFile}");
+        
+            await GlobalCfg.ATISUploadRecording
+                .PostMultipartAsync(multipart => 
+                    multipart.AddFile("file",audioFile,fileName:"file")
+                )
+                .ReceiveString();
+            Log.Information($"Audio Input Uploaded.");
+        }
+        catch (Exception e)
+        {
+            Log.Error(e.Message);
+            GlobalVar.Manager?.Show(new Notification("Warning", e.Message, NotificationType.Warning));
+        }
+    }
+    
 }
