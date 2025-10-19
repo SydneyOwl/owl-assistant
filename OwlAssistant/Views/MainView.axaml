@@ -1,0 +1,118 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:OwlAssistant.ViewModels"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:views="clr-namespace:OwlAssistant.Views"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="OwlAssistant.Views.MainView"
+             x:DataType="viewModels:MainWindowViewModel">
+    <Design.DataContext>
+        <viewModels:MainWindowViewModel />
+    </Design.DataContext>
+    
+    <DockPanel LastChildFill="True">
+        <!-- Header - 移动端精简标题 -->
+        <Border DockPanel.Dock="Top" 
+                Background="#1976d2" 
+                Height="56" 
+                Padding="16,0">
+            <Grid>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <avalonia:MaterialIcon Kind="Owl" 
+                                          Width="24" 
+                                          Height="24" 
+                                          Margin="0,0,12,0" />
+                    <TextBlock Text="OwlAssistant" 
+                              FontSize="18" 
+                              FontWeight="SemiBold" 
+                              VerticalAlignment="Center" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- 底部标签导航 - 移动端标准布局 -->
+        <TabControl Margin="0"
+                   TabStripPlacement="Bottom"
+                   BorderThickness="0">
+            <TabControl.Styles>
+                <Style Selector="TabItem">
+                    <Setter Property="Padding" Value="20,0" />
+                    <Setter Property="BorderThickness" Value="0" />
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="FontSize" Value="12" />
+                    <Setter Property="Height" Value="64" />
+                </Style>
+            </TabControl.Styles>
+
+            <!-- System Info Tab -->
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Vertical" 
+                               HorizontalAlignment="Center"
+                               Spacing="4">
+                        <avalonia:MaterialIcon Kind="InformationSerifCircle" 
+                                              Width="24" 
+                                              Height="24" />
+                        <TextBlock Text="System" 
+                                  FontSize="11" 
+                                  TextAlignment="Center" />
+                    </StackPanel>
+                </TabItem.Header>
+                <views:SystemInfoView DataContext="{Binding SystemInfoViewModel}" />
+            </TabItem>
+            
+            <!-- Sensor Info Tab -->
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Vertical" 
+                                HorizontalAlignment="Center"
+                                Spacing="4">
+                        <avalonia:MaterialIcon Kind="ProximitySensor" 
+                                               Width="24" 
+                                               Height="24" />
+                        <TextBlock Text="Sensor" 
+                                   FontSize="11" 
+                                   TextAlignment="Center" />
+                    </StackPanel>
+                </TabItem.Header>
+                <views:SensorInfoView DataContext="{Binding SensorInfoViewModel}" />
+            </TabItem>
+
+            <!-- Thermal Print Tab -->
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Vertical" 
+                               HorizontalAlignment="Center"
+                               Spacing="4">
+                        <avalonia:MaterialIcon Kind="PrinterPos" 
+                                              Width="24" 
+                                              Height="24" />
+                        <TextBlock Text="Print" 
+                                  FontSize="11" 
+                                  TextAlignment="Center" />
+                    </StackPanel>
+                </TabItem.Header>
+                <views:PrintInfoView DataContext="{Binding PrintInfoViewModel}" />
+            </TabItem>
+
+            <!-- ATIS Settings Tab -->
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Vertical" 
+                               HorizontalAlignment="Center"
+                               Spacing="4">
+                        <avalonia:MaterialIcon Kind="RadioFm" 
+                                              Width="24" 
+                                              Height="24" />
+                        <TextBlock Text="ATIS" 
+                                  FontSize="11" 
+                                  TextAlignment="Center" />
+                    </StackPanel>
+                </TabItem.Header>
+                <views:ATISInfoView DataContext="{Binding AtisInfoViewModel}" />
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</UserControl>

@@ -1,0 +1,148 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:viewModels="clr-namespace:OwlAssistant.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="600"
+             x:Class="OwlAssistant.Views.SystemInfoView"
+             x:DataType="viewModels:SystemInfoViewModel">
+    <Design.DataContext>
+        <viewModels:SystemInfoViewModel />
+    </Design.DataContext>
+    
+    <StackPanel Spacing="0">
+        <!-- 操作栏 -->
+        <Border BorderBrush="{DynamicResource SystemControlBackgroundAccentBrush}"
+            Padding="16,12"
+                BorderThickness="0,0,0,1">
+            <Grid>
+                <TextBlock Text="System Information" 
+                          FontSize="18" 
+                          FontWeight="SemiBold" 
+                          VerticalAlignment="Center" />
+                <StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Right">
+                    <Button Width="40"
+                            Height="40"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Command="{Binding SysPrintCommand}"
+                            CornerRadius="20"
+                            BorderThickness="0">
+                        <avalonia:MaterialIcon Kind="Printer" 
+                                               Width="20" 
+                                               Height="20" 
+                                               Foreground="#1976d2" />
+                    </Button>
+                    
+                    <Button Width="40"
+                            Height="40"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Command="{Binding RefreshAllCommand}"
+                            CornerRadius="20"
+                            BorderThickness="0">
+                        <avalonia:MaterialIcon Kind="Refresh" 
+                                              Width="20" 
+                                              Height="20" 
+                                              Foreground="#1976d2" />
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- 系统信息内容 -->
+            <StackPanel Spacing="0">
+                <!-- 快速状态卡片 -->
+                <Border Margin="16,16,16,8"
+                        CornerRadius="12"
+                        Padding="16"
+                        Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}"
+                        BorderBrush="{DynamicResource SystemControlBackgroundBaseMediumBrush}"
+                        BorderThickness="1">
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="System Status" 
+                                  FontSize="16" 
+                                  FontWeight="SemiBold" />
+                        
+                        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto, Auto" RowSpacing="8">
+                            <StackPanel Orientation="Horizontal" Spacing="8" Grid.Row="0" Grid.Column="0">
+                                <avalonia:MaterialIcon Kind="Cpu64Bit" 
+                                                      Width="16" 
+                                                      Height="16"  />
+                                <TextBlock Text="CPU Usage" 
+                                          FontSize="13" />
+                            </StackPanel>
+                            <TextBlock Text="{Binding CpuUtilization}" 
+                                      FontSize="13" 
+                                      FontWeight="Medium"
+                                      Grid.Row="0" Grid.Column="1"
+                                      HorizontalAlignment="Right" />
+                            
+                            <StackPanel Orientation="Horizontal" Spacing="8" Grid.Row="1" Grid.Column="0">
+                                <avalonia:MaterialIcon Kind="Temperature" 
+                                                       Width="16" 
+                                                       Height="16"  />
+                                <TextBlock Text="CPU Temperature" 
+                                           FontSize="13" />
+                            </StackPanel>
+                            <TextBlock Text="{Binding CpuTemp}" 
+                                       FontSize="13" 
+                                       FontWeight="Medium"
+                                       Grid.Row="1" Grid.Column="1"
+                                       HorizontalAlignment="Right" />
+                            
+                            <StackPanel Orientation="Horizontal" Spacing="8" Grid.Row="2" Grid.Column="0">
+                                <avalonia:MaterialIcon Kind="Memory" 
+                                                      Width="16" 
+                                                      Height="16" />
+                                <TextBlock Text="Memory(MB)" 
+                                          FontSize="13"/>
+                            </StackPanel>
+                            <TextBlock Text="{Binding MemUtilization}" 
+                                      FontSize="13" 
+                                      FontWeight="Medium"
+                                      Grid.Row="2" Grid.Column="1"
+                                      HorizontalAlignment="Right"/>
+                            
+                            <StackPanel Orientation="Horizontal" Spacing="8" Grid.Row="3" Grid.Column="0">
+                                <avalonia:MaterialIcon Kind="Penguin" 
+                                                       Width="16" 
+                                                       Height="16" />
+                                <TextBlock Text="Average Load" 
+                                           FontSize="13"/>
+                            </StackPanel>
+                            <TextBlock Text="{Binding SysLoad}" 
+                                       FontSize="13" 
+                                       FontWeight="Medium"
+                                       Grid.Row="3" Grid.Column="1"
+                                       HorizontalAlignment="Right"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- 详细信息区域 -->
+                <Border Margin="16,0,16,16"
+                        CornerRadius="12"
+                        Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}"
+                        BorderBrush="{DynamicResource SystemControlBackgroundBaseMediumBrush}"
+                        BorderThickness="1">
+                    
+                    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled">
+                        <TextBox 
+                            Text="{Binding SystemInfo}"
+                            AcceptsReturn="True"
+                            TextWrapping="Wrap"
+                            MaxLines="30"
+                            IsReadOnly="True"
+                            BorderThickness="0"
+                            Background="Transparent"
+                            Padding="16"
+                            FontFamily="Consolas, Courier New, monospace"
+                            FontSize="11"/>
+                    </ScrollViewer>
+                </Border>
+            </StackPanel>
+    </StackPanel>
+</UserControl>

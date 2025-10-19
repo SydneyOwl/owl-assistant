@@ -1,0 +1,153 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:viewModels="clr-namespace:OwlAssistant.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="670"
+             x:Class="OwlAssistant.Views.PrintInfoView"
+             x:DataType="viewModels:PrintInfoViewModel">
+    <Design.DataContext>
+        <viewModels:PrintInfoViewModel />
+    </Design.DataContext>
+
+    <StackPanel Spacing="0">
+        <!-- 操作栏 -->
+        <Border BorderBrush="{DynamicResource SystemControlBackgroundAccentBrush}"
+                Padding="16,12"
+                BorderThickness="0,0,0,1">
+            <Grid>
+                <TextBlock Text="Thermal Printer"
+                           FontSize="18"
+                           FontWeight="SemiBold"
+                           VerticalAlignment="Center" />
+                <StackPanel Orientation="Horizontal" Width="40" 
+                            Height="40" Spacing="5" HorizontalAlignment="Right">
+                    <avalonia:MaterialIcon Kind="Printer"
+                                           HorizontalAlignment="Right"
+                                           VerticalAlignment="Center"
+                                           Width="30"
+                                           Height="30"
+                                           Foreground="{Binding PrinterStatusColor}" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- 内容区域 -->
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="20">
+            <StackPanel Spacing="20">
+                 <!-- 图片打印区域 -->
+                <Border CornerRadius="14"
+                        Padding="20"
+                        Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+                        BorderBrush="{DynamicResource SystemControlBackgroundBaseMediumLowBrush}"
+                        BorderThickness="1">
+                    <StackPanel Spacing="20">
+                        <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                            <avalonia:MaterialIcon Kind="Image"
+                                                   Width="20"
+                                                   Height="20"
+                                                   Foreground="{DynamicResource SystemControlBackgroundAccentBrush}" />
+                            <TextBlock Text="Print Image"
+                                       FontSize="17"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+                        </StackPanel>
+
+                        <TextBlock Text="Select an image to print on owl printer!"
+                                   FontSize="13"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                   TextWrapping="Wrap" />
+
+                        <Button CornerRadius="10"
+                                HorizontalAlignment="Stretch"
+                                Padding="20,14"
+                                Command="{Binding SelectImageAndPrintCommand}"
+                                Background="{DynamicResource SystemControlBackgroundAccentBrush}"
+                                Cursor="Hand">
+                            <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center">
+                                <avalonia:MaterialIcon Kind="Image"
+                                                       Width="18"
+                                                       Height="18"
+                                                       Foreground="White" />
+                                <TextBlock Text="Select Image And Print!"
+                                           FontSize="14"
+                                           FontWeight="Medium"
+                                           Foreground="White" />
+                                <avalonia:MaterialIcon Kind="Printer"
+                                                       Width="18"
+                                                       Height="18"
+                                                       Foreground="White" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Border>
+
+                <!-- 文本打印区域 -->
+                <Border CornerRadius="14"
+                        Padding="20"
+                        Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+                        BorderBrush="{DynamicResource SystemControlBackgroundBaseMediumLowBrush}"
+                        BorderThickness="1">
+                    <StackPanel Spacing="16">
+                        <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                            <avalonia:MaterialIcon Kind="Text"
+                                                   Width="20"
+                                                   Height="20"
+                                                   Foreground="{DynamicResource SystemControlBackgroundAccentBrush}" />
+                            <TextBlock Text="Print Text"
+                                       FontSize="17"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+                        </StackPanel>
+
+                        <!-- 文本输入区域 -->
+                        <Border CornerRadius="10"
+                                Padding="0"
+                                Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}"
+                                BorderBrush="{DynamicResource SystemControlBackgroundBaseMediumLowBrush}"
+                                BorderThickness="1">
+                            <Grid>
+                                <TextBox AcceptsReturn="True"
+                                         Watermark="Enter text to print..."
+                                         Text="{Binding TargetText}"
+                                         TextWrapping="Wrap"
+                                         MinHeight="150"
+                                         MaxHeight="200"
+                                         Padding="16,12"
+                                         BorderThickness="0"
+                                         Background="Transparent"/>
+                            </Grid>
+                        </Border>
+
+                        <Grid>
+                            <TextBlock FontSize="12"
+                                       Text="{Binding TextLength}"
+                                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                       HorizontalAlignment="Left" />
+
+                            <Button CornerRadius="10"
+                                    HorizontalAlignment="Right"
+                                    Padding="20,12"
+                                    
+                                    Background="{DynamicResource SystemControlBackgroundAccentBrush}"
+                                    Cursor="Hand"
+                                    Command="{Binding TextPrintCommand}">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <avalonia:MaterialIcon Kind="Printer"
+                                                           Width="18"
+                                                           Height="18"
+                                                           Foreground="White" />
+                                    <TextBlock Text="Print Text"
+                                               FontSize="14"
+                                               FontWeight="Medium"
+                                               Foreground="White" />
+                                </StackPanel>
+                            </Button>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </StackPanel>
+</UserControl>

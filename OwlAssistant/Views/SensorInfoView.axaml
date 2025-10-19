@@ -1,0 +1,257 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:viewModels="clr-namespace:OwlAssistant.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="670"
+             x:Class="OwlAssistant.Views.SensorInfoView"
+             x:DataType="viewModels:SensorInfoViewModel">
+    <Design.DataContext>
+        <viewModels:SensorInfoViewModel />
+    </Design.DataContext>
+
+    <StackPanel Spacing="0">
+        <!-- 操作栏 -->
+        <Border BorderBrush="{DynamicResource SystemControlBackgroundAccentBrush}"
+                Padding="16,12"
+                BorderThickness="0,0,0,1">
+            <Grid>
+                <TextBlock Text="Sensor Information"
+                           FontSize="18"
+                           FontWeight="SemiBold"
+                           VerticalAlignment="Center" />
+                <StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Right">
+                    <Button Width="40"
+                            Height="40"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            CornerRadius="20"
+                            Command="{Binding RefreshAll}"
+                            BorderThickness="0">
+                        <avalonia:MaterialIcon Kind="Refresh"
+                                               Width="20"
+                                               Height="20"
+                                               Foreground="#1976d2" />
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Grid Margin="20" VerticalAlignment="Center" ColumnDefinitions="*,20,*">
+            <!-- 室内传感器卡片 -->
+            <Border MinWidth="160" Grid.Column="0"
+                    CornerRadius="12"
+                    Padding="16"
+                    Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}"
+                    BorderBrush="{DynamicResource SystemControlBackgroundBaseMediumBrush}"
+                    BorderThickness="1">
+                <StackPanel Spacing="12">
+                    <!-- 标题 -->
+                    <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                        <avalonia:MaterialIcon Kind="Home"
+                                               Width="16"
+                                               Height="16" />
+                        <TextBlock Text="Inside"
+                                   FontSize="14"
+                                   FontWeight="SemiBold" />
+                    </StackPanel>
+
+                    <!-- 数据项 -->
+                    <StackPanel Spacing="8">
+                        <!-- 温度 -->
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Orientation="Horizontal" Spacing="6" Grid.Column="0">
+                                <avalonia:MaterialIcon Kind="Temperature"
+                                                       Width="14"
+                                                       Height="14" />
+                                <TextBlock Text="Temp"
+                                           FontSize="12"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                            <TextBlock Text="{Binding InsideTemperature}"
+                                       FontSize="12"
+                                       FontWeight="Medium"
+                                       Grid.Column="1"
+                                       HorizontalAlignment="Right"
+                                       VerticalAlignment="Center" />
+                        </Grid>
+
+                        <!-- 湿度 -->
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Orientation="Horizontal" Spacing="6" Grid.Column="0">
+                                <avalonia:MaterialIcon Kind="Humidity"
+                                                       Width="14"
+                                                       Height="14" />
+                                <TextBlock Text="Humidity"
+                                           FontSize="12"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                            <TextBlock Text="{Binding InsideHumidity}"
+                                       FontSize="12"
+                                       FontWeight="Medium"
+                                       Grid.Column="1"
+                                       HorizontalAlignment="Right"
+                                       VerticalAlignment="Center" />
+                        </Grid>
+
+                        <!-- 电量 -->
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Orientation="Horizontal" Spacing="6" Grid.Column="0">
+                                <avalonia:MaterialIcon Kind="Battery"
+                                                       Width="14"
+                                                       Height="14" />
+                                <TextBlock Text="Power"
+                                           FontSize="12"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                            <TextBlock Text="{Binding InsidePower}"
+                                       FontSize="12"
+                                       FontWeight="Medium"
+                                       Grid.Column="1"
+                                       HorizontalAlignment="Right"
+                                       VerticalAlignment="Center" />
+                        </Grid>
+                        
+                        <TextBlock Text="{Binding InsideReportTime}"
+                                   FontSize="12"
+                                   Margin="0,10,0,0"
+                                   FontWeight="Medium"
+                                   TextTrimming="{x:Static TextTrimming.CharacterEllipsis}"
+                                   TextWrapping="NoWrap"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- 室外传感器卡片 -->
+            <Border MinWidth="160" Grid.Column="2"
+                    CornerRadius="12"
+                    Padding="16"
+                    Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}"
+                    BorderBrush="{DynamicResource SystemControlBackgroundBaseMediumBrush}"
+                    BorderThickness="1">
+                <StackPanel Spacing="12">
+                    <!-- 标题 -->
+                    <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                        <avalonia:MaterialIcon Kind="Nature"
+                                               Width="16"
+                                               Height="16" />
+                        <TextBlock Text="Outside"
+                                   FontSize="14"
+                                   FontWeight="SemiBold" />
+                    </StackPanel>
+
+                    <!-- 数据项 -->
+                    <StackPanel Spacing="8">
+                        <!-- 温度 -->
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Orientation="Horizontal" Spacing="6" Grid.Column="0">
+                                <avalonia:MaterialIcon Kind="Temperature"
+                                                       Width="14"
+                                                       Height="14" />
+                                <TextBlock Text="Temp"
+                                           FontSize="12"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                            <TextBlock Text="{Binding OutsideTemperature}"
+                                       FontSize="12"
+                                       FontWeight="Medium"
+                                       Grid.Column="1"
+                                       HorizontalAlignment="Right"
+                                       VerticalAlignment="Center" />
+                        </Grid>
+
+                        <!-- 湿度 -->
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Orientation="Horizontal" Spacing="6" Grid.Column="0">
+                                <avalonia:MaterialIcon Kind="Humidity"
+                                                       Width="14"
+                                                       Height="14" />
+                                <TextBlock Text="Humidity"
+                                           FontSize="12"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                            <TextBlock Text="{Binding OutsideHumidity}"
+                                       FontSize="12"
+                                       FontWeight="Medium"
+                                       Grid.Column="1"
+                                       HorizontalAlignment="Right"
+                                       VerticalAlignment="Center" />
+                        </Grid>
+
+                        <!-- 电量 -->
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Orientation="Horizontal" Spacing="6" Grid.Column="0">
+                                <avalonia:MaterialIcon Kind="Battery"
+                                                       Width="14"
+                                                       Height="14" />
+                                <TextBlock Text="Power"
+                                           FontSize="12"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                            <TextBlock Text="{Binding OutsidePower}"
+                                       FontSize="12"
+                                       FontWeight="Medium"
+                                       Grid.Column="1"
+                                       HorizontalAlignment="Right"
+                                       VerticalAlignment="Center" />
+                        </Grid>
+                        
+                        <TextBlock Text="{Binding OutsideReportTime}"
+                                   FontSize="12"
+                                   FontWeight="Medium"
+                                   Margin="0,10,0,0"
+                                   HorizontalAlignment="Center"
+                                   TextTrimming="{x:Static TextTrimming.CharacterEllipsis}"
+                                   TextWrapping="NoWrap"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Grid>
+        
+        <StackPanel Margin="0,10,0,0">
+            <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="Auto,*"
+                  Margin="10"
+                  ColumnSpacing="20" RowSpacing="10">
+                <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
+                            Spacing="20"
+                            HorizontalAlignment="Center"
+                            Orientation="Horizontal">
+                    <CalendarDatePicker  SelectedDate="{Binding ChartStartFrom}"/>
+                    <Label Content="To" VerticalAlignment="Center" />
+                    <CalendarDatePicker SelectedDate="{Binding ChartEndFrom}"/>
+                </StackPanel>
+                
+                <Label Grid.Row="2" Grid.Column="0" Content="For: " VerticalAlignment="Center"/>
+                <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="1" Spacing="10">
+                    <ComboBox 
+                              ItemsSource="{Binding SensorOptions}"
+                              SelectedItem="{Binding ChartSensor}" 
+                              HorizontalAlignment="Left"
+                              MinWidth="100"/>
+                    <ComboBox 
+                              ItemsSource="{Binding SensorDataTypeOptions}"
+                              SelectedItem="{Binding ChartSensorDataType}" 
+                              HorizontalAlignment="Left"
+                              MinWidth="100"/>
+                    
+                    <Button  Margin="10,0,0,0"
+                            Command="{Binding RefreshChart}"
+                            HorizontalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" Spacing="5">
+                            <avalonia:MaterialIcon Kind="Refresh"
+                                                   Width="20"
+                                                   Height="20"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+           
+            <ContentControl x:Name="plotControl" Height="270"
+                            Content="{Binding PlotControl, Mode=OneTime}"/>
+        </StackPanel>
+    </StackPanel>
+</UserControl>
