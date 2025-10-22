@@ -2,7 +2,7 @@
 
 public class GlobalCfg
 {
-    public static string GlobalAddr = "https://scan.mrowl.xyz:5583/";
+    public static string GlobalAddr = "http://scan.mrowl.xyz:8056/";
     
     public static string GlobalSensorAddr = "http://scan.mrowl.xyz:3649/";
     

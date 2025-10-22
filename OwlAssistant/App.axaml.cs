@@ -23,12 +23,16 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        FlurlHttp.ConfigureClientForUrl(GlobalCfg.GlobalAddr)
-            .ConfigureInnerHandler((handler) =>
-                {
-                    handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
-                }
-            );
+        
+        if (!OperatingSystem.IsBrowser())
+        {
+            FlurlHttp.ConfigureClientForUrl(GlobalCfg.GlobalAddr)
+                .ConfigureInnerHandler((handler) =>
+                    {
+                        handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+                    }
+                );
+        }
         
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Debug()

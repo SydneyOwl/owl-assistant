@@ -12,6 +12,7 @@ using Newtonsoft.Json.Linq;
 using OwlAssistant.Resources;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using Serilog;
 using Notification = Avalonia.Controls.Notifications.Notification;
 
 namespace OwlAssistant.ViewModels;
