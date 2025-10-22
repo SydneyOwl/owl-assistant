@@ -22,6 +22,8 @@
                            FontWeight="SemiBold"
                            VerticalAlignment="Center" />
                 <StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Right">
+                    <ToggleSwitch IsChecked="{Binding ToggleVisibility}"
+                                  OffContent="" OnContent=""/>
                     <Button Width="40"
                             Height="40"
                             HorizontalAlignment="Right"
@@ -38,7 +40,7 @@
             </Grid>
         </Border>
 
-        <Grid Margin="20" VerticalAlignment="Center" ColumnDefinitions="*,20,*">
+        <Grid IsVisible="{Binding !ToggleVisibility}" Margin="20" VerticalAlignment="Center" ColumnDefinitions="*,20,*">
             <!-- 室内传感器卡片 -->
             <Border MinWidth="160" Grid.Column="0"
                     CornerRadius="12"
@@ -210,6 +212,169 @@
                     </StackPanel>
                 </StackPanel>
             </Border>
+        </Grid>
+        
+        <Grid Margin="20" VerticalAlignment="Center" ColumnDefinitions="*"
+              IsVisible="{Binding ToggleVisibility}" >
+            <Border MinWidth="160" Grid.Column="0"
+                CornerRadius="12"
+                Padding="16"
+                Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}"
+                BorderBrush="{DynamicResource SystemControlBackgroundBaseMediumBrush}"
+                BorderThickness="1">
+            <StackPanel Spacing="12" HorizontalAlignment="Center">
+                <!-- 标题 -->
+                <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                    <avalonia:MaterialIcon Kind="AirPurifier"
+                                           Width="16"
+                                           Height="16" />
+                    <TextBlock Text="Air Sensor"
+                               FontSize="14"
+                               FontWeight="SemiBold" />
+                </StackPanel>
+
+                <!-- 数据项 -->
+                <Grid ColumnDefinitions="Auto,Auto" ColumnSpacing="20" RowSpacing="10" RowDefinitions="Auto,Auto">
+                    <!-- 左列 -->
+                    <StackPanel Grid.Row="0" Spacing="12" Grid.Column="0">
+                        <!-- co2 -->
+                        <Grid ColumnDefinitions="*,Auto" Grid.ColumnSpacing="15">
+                            <StackPanel Orientation="Horizontal" Spacing="6" Grid.Column="0">
+                                <avalonia:MaterialIcon Kind="MoleculeCo2"
+                                                       Width="14"
+                                                       Height="14" />
+                                <TextBlock Text="CO₂"
+                                           FontSize="12"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                            <TextBlock Text="{Binding DarkinCO2}"
+                                       FontSize="12"
+                                       FontWeight="Medium"
+                                       Grid.Column="1"
+                                       HorizontalAlignment="Right"
+                                       VerticalAlignment="Center" />
+                        </Grid>
+
+                        <!-- pm2.5 -->
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Orientation="Horizontal" Spacing="6" Grid.Column="0">
+                                <avalonia:MaterialIcon Kind="Cloud"
+                                                       Width="14"
+                                                       Height="14" />
+                                <TextBlock Text="PM2.5"
+                                           FontSize="12"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                            <TextBlock Text="{Binding DarkinPM25}"
+                                        FontSize="12"
+                                        FontWeight="Medium"
+                                        Grid.Column="1"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center" />
+                        </Grid>
+                        
+                        <!-- pm1 -->
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Orientation="Horizontal" Spacing="6" Grid.Column="0">
+                                <avalonia:MaterialIcon Kind="WeatherHazy"
+                                                       Width="14"
+                                                       Height="14" />
+                                <TextBlock Text="PM1"
+                                           FontSize="12"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                            <TextBlock Text="{Binding DarkinPM1}"
+                                       FontSize="12"
+                                       FontWeight="Medium"
+                                       Grid.Column="1"
+                                       HorizontalAlignment="Right"
+                                       VerticalAlignment="Center" />
+                        </Grid>
+                        
+                        <!-- pm10 -->
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Orientation="Horizontal" Spacing="6" Grid.Column="0">
+                                <avalonia:MaterialIcon Kind="Smog"
+                                                       Width="14"
+                                                       Height="14" />
+                                <TextBlock Text="PM10"
+                                           FontSize="12"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                            <TextBlock Text="{Binding DarkinPM10}"
+                                       FontSize="12"
+                                       FontWeight="Medium"
+                                       Grid.Column="1"
+                                       HorizontalAlignment="Right"
+                                       VerticalAlignment="Center" />
+                        </Grid>
+                    </StackPanel>
+                    
+                    <!-- 右列 -->
+                    <StackPanel Grid.Row="0" Spacing="12" Grid.Column="1">
+                        <!-- tvoc -->
+                        <Grid ColumnDefinitions="*,Auto" Grid.ColumnSpacing="15">
+                            <StackPanel Orientation="Horizontal" Spacing="6" Grid.Column="0">
+                                <avalonia:MaterialIcon Kind="ChemicalWeapon"
+                                                       Width="14"
+                                                       Height="14" />
+                                <TextBlock Text="TVOC"
+                                           FontSize="12"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                            <TextBlock Text="{Binding DarkinTVOC}"
+                                       FontSize="12"
+                                       FontWeight="Medium"
+                                       Grid.Column="1"
+                                       HorizontalAlignment="Right"
+                                       VerticalAlignment="Center" />
+                        </Grid>
+
+                        <!-- temp -->
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Orientation="Horizontal" Spacing="6" Grid.Column="0">
+                                <avalonia:MaterialIcon Kind="Thermometer"
+                                                       Width="14"
+                                                       Height="14" />
+                                <TextBlock Text="Temperature"
+                                           FontSize="12"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                            <TextBlock Text="{Binding DarkinTemperature}"
+                                       FontSize="12"
+                                       FontWeight="Medium"
+                                       Grid.Column="1"
+                                       HorizontalAlignment="Right"
+                                       VerticalAlignment="Center" />
+                        </Grid>
+                        
+                        <!-- humi -->
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Orientation="Horizontal" Spacing="6" Grid.Column="0">
+                                <avalonia:MaterialIcon Kind="WaterPercent"
+                                                       Width="14"
+                                                       Height="14" />
+                                <TextBlock Text="Humidity"
+                                           FontSize="12"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                            <TextBlock Text="{Binding DarkinHumidity}"
+                                       FontSize="12"
+                                       FontWeight="Medium"
+                                       Grid.Column="1"
+                                       HorizontalAlignment="Right"
+                                       VerticalAlignment="Center" />
+                        </Grid>
+                        
+                        
+                    </StackPanel>
+                    
+                    <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+                        <TextBlock Text="{Binding DarkinReportTime}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </Border>
         </Grid>
         
         <StackPanel Margin="0,10,0,0">

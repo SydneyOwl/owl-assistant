@@ -106,12 +106,19 @@ public class SensorInfoViewModel : ViewModelBase
         if (tmp is null) throw new Exception("Invalid data!");
         foreach (var obj in tmp)
         {
-            var temperature = obj["temp"]!.ToString();
-            var humidity = obj["humi"]!.ToString();
-            var battery = obj["batt"]!.ToString();
-            var mac = obj["name"]!.ToString();
-            var reportTime = obj["time"]!.ToString();
+            var temperature = obj["temp"]?.ToObject<float>().ToString("F1");
+            var humidity = obj["humi"]?.ToObject<float>().ToString("F1");
+            var battery = obj["batt"]?.ToString();
+            var mac = obj["name"]?.ToString();
+            var reportTime = obj["time"]?.ToString();
             var reportedTime = DateTimeOffset.FromUnixTimeSeconds(obj["stamp"]!.ToObject<long>()).LocalDateTime;
+            
+            
+            var co2 = obj["co2"]?.ToObject<float>().ToString("F1");
+            var pm1 = obj["pm1"]?.ToObject<float>().ToString("F1");
+            var pm10 = obj["pm10"]?.ToObject<float>().ToString("F1");
+            var pm25 = obj["pm25"]?.ToObject<float>().ToString("F1");
+            var tvoc = obj["tvoc"]?.ToObject<float>().ToString("F1");
             
             if (mac == GlobalCfg.InsideSensorMac)
             {
@@ -146,7 +153,30 @@ public class SensorInfoViewModel : ViewModelBase
                 OutsidePower = $"{battery}%";
                 OutsideReportTime = $"{reportTime}";
             }
-
+            
+            if (mac == GlobalCfg.DarkinName)
+            {
+                if (DateTime.Now - reportedTime > TimeSpan.FromMinutes(3))
+                {
+                    DarkinCO2 = "TIMEOUT";
+                    DarkinHumidity = "TIMEOUT";
+                    DarkinPM1 = "TIMEOUT";
+                    DarkinPM10 = "TIMEOUT";
+                    DarkinPM25 = "TIMEOUT";
+                    DarkinReportTime = "TIMEOUT";
+                    DarkinTemperature = "TIMEOUT";
+                    DarkinTVOC = "TIMEOUT";
+                    continue;
+                }
+                DarkinCO2 = $"{co2}ppm";
+                DarkinHumidity =  $"{humidity}%";
+                DarkinPM1 =  $"{pm1}µg/m³";
+                DarkinPM10 = $"{pm10}µg/m³";
+                DarkinPM25 = $"{pm25}µg/m³";
+                DarkinReportTime = $"{reportedTime}";
+                DarkinTemperature = $"{temperature}°C";
+                DarkinTVOC = $"{tvoc}µg/m³";
+            }
         }
     }
 
@@ -161,6 +191,13 @@ public class SensorInfoViewModel : ViewModelBase
                 .WithTimeout(TimeSpan.FromSeconds(GlobalCfg.DefaultRequestTimeout))
                 .PostJsonAsync(new
                 {
+                    db = ChartSensor switch
+                    {
+                        "inside" => "inner_sensor",
+                        "outside" => "out_sensor",
+                        "darkin" => "darkin_sensor",
+                        _ => "out_sensor"
+                    },
                     start = $"{ChartStartFrom:yyyy-MM-dd} 00:00:00",
                     end = $"{ChartEndFrom:yyyy-MM-dd} 23:59:59",
                 })
@@ -169,7 +206,7 @@ public class SensorInfoViewModel : ViewModelBase
             var tmp = JsonConvert.DeserializeObject<JObject>(result);
             if (tmp is null) throw new Exception("Invalid data!");
 
-            var target = tmp[ChartSensor]?.ToObject<List<JObject>>();
+            var target = tmp["result"]?.ToObject<List<JObject>>();
             if(target is null  ||  target.Count == 0) return;
 
             var xs = target?.Select(x => DateTime.Parse(x["time"]!.ToString().Replace(" GMT", ""))).ToArray();
@@ -222,26 +259,38 @@ public class SensorInfoViewModel : ViewModelBase
         _resetOutsideValue();
     }
     
-    [Reactive] public string InsideTemperature { get; set; } = "?";
-    [Reactive] public string InsideHumidity { get; set; } = "?";
-    [Reactive] public string InsidePower { get; set; } = "?";
-    [Reactive] public string InsideReportTime { get; set; } = "?";
-    [Reactive] public string OutsideTemperature { get; set; } = "?";
-    [Reactive] public string OutsideHumidity { get; set; } = "?";
-    [Reactive] public string OutsidePower { get; set; } = "?";
-    [Reactive] public string OutsideReportTime { get; set; } = "?";
+    [Reactive] public string? InsideTemperature { get; set; } = "?";
+    [Reactive] public string? InsideHumidity { get; set; } = "?";
+    [Reactive] public string? InsidePower { get; set; } = "?";
+    [Reactive] public string? InsideReportTime { get; set; } = "?";
+    [Reactive] public string? OutsideTemperature { get; set; } = "?";
+    [Reactive] public string? OutsideHumidity { get; set; } = "?";
+    [Reactive] public string? OutsidePower { get; set; } = "?";
+    [Reactive] public string? OutsideReportTime { get; set; } = "?";
+    [Reactive] public string? DarkinTemperature { get; set; } = "?";
+    [Reactive] public string? DarkinHumidity { get; set; } = "?";
+    [Reactive] public string? DarkinPM1 { get; set; } = "?";
+    [Reactive] public string? DarkinPM25 { get; set; } = "?";
+    [Reactive] public string? DarkinPM10 { get; set; } = "?";
+    [Reactive] public string? DarkinTVOC { get; set; } = "?";
+    [Reactive] public string? DarkinCO2 { get; set; } = "?";
+    [Reactive] public string? DarkinReportTime { get; set; } = "?";
+    
     [Reactive] public DateTime ChartStartFrom { get; set; } = DateTime.Now;
     [Reactive] public DateTime ChartEndFrom { get; set; } = DateTime.Now;
     [Reactive] public string ChartSensor { get; set; }
     [Reactive] public string ChartSensorDataType { get; set; }
+    
+    [Reactive] public bool ToggleVisibility { get; set; }
 
     public ObservableCollection<string> SensorDataTypeOptions { get; set; } = new();
     
-    public List<string> SensorOptions { get; } = ["inside", "outside"];
+    public List<string> SensorOptions { get; } = ["inside", "outside", "darkin"];
     private Dictionary<string, List<string>> _sensorDataTypeOptions { get; } = new()
     {
         ["inside"] = ["temp", "humi"],
         ["outside"] = ["temp", "humi"],
+        ["darkin"] = ["temp","humi","pm1","pm25","pm10","tvoc","co2"],
     };
     
     public AvaPlot PlotControl { get; private set; }

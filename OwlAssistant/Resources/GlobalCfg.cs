@@ -41,4 +41,6 @@ public class GlobalCfg
     public static string InsideSensorMac = "A4:C1:38:CF:B0:D6";
     
     public static string OutsideSensorMac = "A4:C1:38:D5:05:79";
+    
+    public static string DarkinName = "darkin";
 }
