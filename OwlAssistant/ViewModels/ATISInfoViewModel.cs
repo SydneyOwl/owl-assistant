@@ -40,6 +40,8 @@ public class ATISInfoViewModel : ViewModelBase
     [Reactive] public double TxFrequency { get; set; } = 0;
     
     [Reactive] public string SelectedSong { get; set; } = string.Empty;
+    
+    [Reactive] public bool IsContentOpened { get; set; } = false;
 
     [Reactive]
     public ObservableCollection<string> SongList { get; set; } = [];
@@ -49,6 +51,7 @@ public class ATISInfoViewModel : ViewModelBase
     public ReactiveCommand<Unit, Unit> RefreshCommand { get; }
     public ReactiveCommand<Unit, Unit> ApplyTxFreq { get; }
     public ReactiveCommand<Unit, Unit> ResetAll { get; }
+    public ReactiveCommand<Unit, Unit> GoRepo { get; }
     
     public ReactiveCommand<Unit, Unit> ChangeRecordStatus { get; }
 
@@ -59,6 +62,15 @@ public class ATISInfoViewModel : ViewModelBase
 
     public ATISInfoViewModel()
     {
+        RefreshCommand = ReactiveCommand.CreateFromTask(()=>Task.CompletedTask);
+        GoRepo = ReactiveCommand.CreateFromTask(async ()=>
+        {
+            await GlobalVar.TopLevel!.Launcher.LaunchUriAsync(
+                new Uri("https://github.com/SydneyOwl/owl-assistant"));
+            return;
+        });
+        if (OperatingSystem.IsBrowser())return;
+        IsContentOpened = true;
         _recorder = new AudioRecorderService
         {
             StopRecordingOnSilence = false,

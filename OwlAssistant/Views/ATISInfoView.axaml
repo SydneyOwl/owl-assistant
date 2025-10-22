@@ -13,7 +13,8 @@
     </Design.DataContext>
 
     
-    <StackPanel Spacing="0">
+    <StackPanel>
+        <StackPanel Spacing="0">
         <Border BorderBrush="{DynamicResource SystemControlBackgroundAccentBrush}"
                 Padding="16,12"
                 BorderThickness="0,0,0,1">
@@ -45,9 +46,47 @@
                 </StackPanel>
             </Grid>
         </Border>
+            
+        <StackPanel HorizontalAlignment="Center" 
+                    IsVisible="{Binding !IsContentOpened}"
+                    Margin="0,50,0,0"
+                    Spacing="15">
+            <avalonia:MaterialIcon Kind="Denied"
+                                   HorizontalAlignment="Center"
+                                   Width="40"
+                                   Height="40"
+                                   Foreground="Orange" />
+            <TextBlock Text="Access denied  :("
+                       FontSize="18"
+                       TextAlignment="Center"
+                       FontWeight="Bold"
+                       HorizontalAlignment="Center" />
+            <TextBlock Text="Oops... Your credentials lack the required elegance to enter this domain!"
+                       FontSize="14"
+                       TextAlignment="Center"
+                       TextWrapping="Wrap"
+                       MaxWidth="300"
+                       Opacity="0.8"
+                       HorizontalAlignment="Center" />
+            
+            <StackPanel Orientation="Horizontal" Spacing="0" HorizontalAlignment="Center">
+                <avalonia:MaterialIcon Kind="Github"
+                                       HorizontalAlignment="Center"
+                                       Width="20"
+                                       Height="20" />
+                <HyperlinkButton Content="Repo: SydneyOwl/owl-assistant"
+                                 Command="{Binding GoRepo}"
+                                 FontSize="14"
+                                 MaxWidth="300"
+                                 Opacity="0.8"
+                                 HorizontalAlignment="Center" />
+            </StackPanel>
+            
+        </StackPanel>
 
         <!-- 内容区域 -->
         <ScrollViewer VerticalScrollBarVisibility="Auto"
+                      IsVisible="{Binding IsContentOpened}"
                       Height="580" Margin="20">
             <StackPanel Spacing="20">
                 
@@ -303,5 +342,6 @@
                 </Border>
             </StackPanel>
         </ScrollViewer>
+    </StackPanel>
     </StackPanel>
 </UserControl>

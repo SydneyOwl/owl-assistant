@@ -3,6 +3,7 @@
         <TargetFramework>net8.0-browser</TargetFramework>
         <OutputType>Exe</OutputType>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
