@@ -1,25 +1,4 @@
-﻿# Readme
- 
-Personal project backup
-
-For android:
-
-![img.png](./md_assets/img.png)
-
-
-For Desktop:
-
-![img.png](./md_assets/2img.png)
-
-For Browser:
-
-![img.png](./md_assets/1img.png)
-
-
-And in case you want to use the code - this repo is licensed under `WTFPL`.
-
-```
-           DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+﻿           DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
                     Version 2, December 2004
 
  Copyright (C) 2004 Sam Hocevar <sam@hocevar.net>
@@ -39,4 +18,3 @@ PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS 
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 OR OTHER DEALINGS IN THE SOFTWARE.
-```
