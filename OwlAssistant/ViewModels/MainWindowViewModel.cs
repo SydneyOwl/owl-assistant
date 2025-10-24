@@ -1,4 +1,7 @@
-﻿using System.Reactive;
+﻿using System;
+using System.Reactive;
+using Avalonia.Media;
+using OwlAssistant.Resources;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -14,7 +17,11 @@ public class MainWindowViewModel : ViewModelBase
         SensorInfoViewModel = new SensorInfoViewModel();
         PrintInfoViewModel = new PrintInfoViewModel();
         AtisInfoViewModel = new ATISInfoViewModel();
+
+        IsFRP = GlobalCfg.UseFrp;
     }
+
+    [Reactive] public bool IsFRP { get; set; } = false;
     
     [Reactive] public SystemInfoViewModel? SystemInfoViewModel { get; set; }
     [Reactive] public SensorInfoViewModel? SensorInfoViewModel { get; set; }

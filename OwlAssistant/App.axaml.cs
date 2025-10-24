@@ -1,4 +1,7 @@
 using System;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -21,19 +24,8 @@ public partial class App : Application
         AvaloniaXamlLoader.Load(this);
     }
 
-    public override void OnFrameworkInitializationCompleted()
+    public override async void OnFrameworkInitializationCompleted()
     {
-        
-        if (!OperatingSystem.IsBrowser())
-        {
-            FlurlHttp.ConfigureClientForUrl(GlobalCfg.GlobalAddr)
-                .ConfigureInnerHandler((handler) =>
-                    {
-                        handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
-                    }
-                );
-        }
-        
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Debug()
             .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
@@ -42,23 +34,69 @@ public partial class App : Application
             .WriteTo.Debug()
             .CreateLogger();
 
-        AppDomain.CurrentDomain.UnhandledException += (s, e) => Log.Write(LogEventLevel.Error, (Exception)e.ExceptionObject, "Unhandled exception");
-        TaskScheduler.UnobservedTaskException += (s, e) => Log.Write(LogEventLevel.Error, e.Exception, "Unobserved task exception");
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                // check environment
+                // throw new Exception();
+                await GlobalCfg.ThermalOnline
+                    .WithTimeout(TimeSpan.FromMilliseconds(500))
+                    .PostJsonAsync(new { })
+                    .ReceiveString();
+            }
+            catch (Exception e)
+            {
+                // use global
+                Log.Error("Using fallback url");
+                GlobalCfg.GlobalAddr = $"(SECRET)";
+                GlobalCfg.GlobalSensorAddr = $"(SECRET)";
+                GlobalCfg.UseFrp = true;
+            }
+        });
+        Thread.Sleep(600);
 
-        
+        FlurlHttp.Clients.WithDefaults(builder =>
+            builder.BeforeCall(call =>
+                {
+                    // if (call.Request.Url.ToUri().Host.Contains("mrowl.xyz"))
+                    // {
+                    if (!GlobalCfg.UseFrp)return;
+                        var timeWindow = DateTimeOffset.Now.ToUnixTimeSeconds() / 120;
+                        var rawStr = $"{timeWindow}:{GlobalCfg.Salt}";
+                        var bytes = Encoding.UTF8.GetBytes(rawStr);
+                        var hashBytes = SHA256.HashData(bytes);
+                        var result = Convert.ToHexString(hashBytes).ToLower();
+                        call.Client.WithHeader("owl-auth-token", result);
+                    // }
+                })
+                .ConfigureInnerHandler(handler =>
+                {
+                    if (OperatingSystem.IsBrowser()) return;
+                    handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+                })
+        );
+
+
+        AppDomain.CurrentDomain.UnhandledException += (s, e) =>
+            Log.Write(LogEventLevel.Error, (Exception)e.ExceptionObject, "Unhandled exception");
+        TaskScheduler.UnobservedTaskException +=
+            (s, e) => Log.Write(LogEventLevel.Error, e.Exception, "Unobserved task exception");
+
+
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             desktop.MainWindow = new MainWindow
             {
                 DataContext = new MainWindowViewModel()
             };
-            
+
             GlobalVar.Manager = new WindowNotificationManager(desktop.MainWindow);
             GlobalVar.TopLevel = desktop.MainWindow;
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
         {
-            singleViewPlatform.MainView = new MainView()
+            singleViewPlatform.MainView = new MainView
             {
                 DataContext = new MainWindowViewModel()
             };

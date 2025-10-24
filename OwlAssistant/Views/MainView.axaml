@@ -19,16 +19,23 @@
                 Height="56" 
                 Padding="16,0">
             <Grid>
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="12">
                     <avalonia:MaterialIcon Kind="Owl" 
                                           Width="24" 
-                                          Height="24" 
-                                          Margin="0,0,12,0" />
+                                          Height="24"  />
                     <TextBlock Text="OwlAssistant" 
                               FontSize="18" 
                               FontWeight="SemiBold" 
                               VerticalAlignment="Center" />
                 </StackPanel>
+                
+                    
+                <avalonia:MaterialIcon Kind="Internet" 
+                                       HorizontalAlignment="Right"
+                                       IsVisible="{Binding IsFRP}"
+                                       Foreground="LawnGreen"
+                                       Width="24" 
+                                       Height="24" />
             </Grid>
         </Border>
 
